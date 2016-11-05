@@ -1,0 +1,57 @@
+#28x16 448 neurons
+from pyfann import libfann
+from PIL import Image
+
+files = ["stream6-27198.ts1.png", #no train
+    "stream6-27198.ts5.png", #no train
+    "day_nt-1.png", #no train
+    "vech-nt-2.png", #no train
+    "stream6-27563.ts1.png",
+    "stream6-27563.ts2.png",
+    "stream6-27563.ts3.png",
+    "stream6-27563.ts4.png",
+    "stream6-27563.ts5.png",
+    "stream6-27563.ts6.png",
+    "stream6-27563.ts1d.png",
+    "stream6-27563.ts2d.png",
+    "morning-t-snow-1.png",
+    "morning-t-snow-2.png",
+    "morning-t-snow-4.png",
+    "morning-t-snow-6.png",
+    "morning-t-snow-7.png",
+    "vech-t-1.png",
+    "vech-t-2.png",
+    "vech-t-3.png",
+    ]
+datastruct = []
+
+for filename in files:
+    im = Image.open(filename, 'r')
+    pixel_values = list(im.getdata(0))
+    datastruct.append(pixel_values)
+
+print len(datastruct[0])
+
+desired_error = 0.001
+max_epochs = 1000
+epochs_between_reports = 1000
+
+print "1"
+ann = libfann.neural_net()
+print "2"
+#ann.create_standard(num_layers, num_input, num_neurons_hidden, num_output)
+ann.create_standard_array((448,150,1))
+print "5"
+ann.set_activation_function_hidden(libfann.SIGMOID_SYMMETRIC_STEPWISE)
+print "6"
+ann.set_activation_function_output(libfann.SIGMOID_SYMMETRIC_STEPWISE)
+print "3"
+train_data = libfann.training_data()
+print "4"
+train_data.set_train_data(datastruct, [[0],[0],[0],[0],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1],[1]])
+print "7"
+ann.train_on_data(train_data,max_epochs, epochs_between_reports, desired_error)
+print "8"
+ann.save('fann.data')
+print "9"
+ann.destroy()
